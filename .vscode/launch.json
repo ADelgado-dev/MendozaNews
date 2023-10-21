@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-ApiNewsApplication<api-news>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.mendozanews.apinews.ApiNewsApplication",
+      "projectName": "api-news",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
