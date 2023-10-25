@@ -4,7 +4,7 @@ import axios from "axios";
 export const listaSecciones = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:8080/api/seccion/listar"
+      "http://localhost:8080/api/secciones"
     );
     return response.data;
   } catch (error) {

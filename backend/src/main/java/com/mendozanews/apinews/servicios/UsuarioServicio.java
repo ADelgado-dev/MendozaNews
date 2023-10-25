@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 
-
 @Service
 public class UsuarioServicio implements UserDetailsService {
 
@@ -232,13 +231,37 @@ public class UsuarioServicio implements UserDetailsService {
 
     }
     public boolean authenticate(String email, String password) {
-        Usuario usuario = buscarPorEmail(email);
-        if (usuario != null) {
-            String hashedPassword = usuario.getPassword();
-            // BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            // return passwordEncoder.matches(password, hashedPassword);
-            return password.equals(hashedPassword);
+        try { 
+            Usuario usuario = buscarPorEmail(email);
+            if (usuario != null) {
+                String hashedPassword = usuario.getPassword();
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                if (passwordEncoder.matches(password, hashedPassword)) {
+                    System.out.println("Autenticación exitosa para el usuario: " + usuario.getEmail());
+                    return true;
+                } else {
+                    System.out.println("La contraseña no coincide para el usuario: " + usuario.getNombreUsuario());
+                    return false;
+                }
+            } else {
+                System.out.println("No se encontró ningún usuario con el email: " + email);
+                return false;
+            }
+        } catch (Exception e) {
+            // Manejo de la excepción
+            System.err.println("Error en la autenticación: usuarioServicio" + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
-        return false;
+    }
+
+    @Autowired
+    private UsuarioRepositorio usuarioRepositorio;
+
+    // Otros métodos de tu servicio
+
+    public String getStoredPasswordByEmail(String email) {
+        Usuario usuario = usuarioRepositorio.buscarPorEmail(email);
+        return usuario != null ? usuario.getPassword() : null;
     }
 }

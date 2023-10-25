@@ -1,27 +1,15 @@
-
 package com.mendozanews.apinews.entidades;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.util.Date;
-import java.util.List;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Date;
+import java.util.List;
 import org.hibernate.annotations.GenericGenerator;
 
+@Table(name = "noticia")
 @Entity
 @Data
 @AllArgsConstructor
@@ -50,22 +38,25 @@ public class Noticia {
     private List<String> etiquetas;
 
     @ManyToOne
+    @JoinColumn(name = "seccion_id", referencedColumnName = "id")
     private Seccion seccion;
 
     @ManyToOne
+    @JoinColumn(name = "autor_id", referencedColumnName = "id")
     private Autor autor;
 
     @Column(name = "fecha_publicacion")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fechaPublicacion;
 
     @Column(name = "fecha_edicion")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date fechaEdicion;
 
     private Boolean activa;
 
     @OneToOne
+    @JoinColumn(name = "portada_id")
     private Imagen portada;
 
     @OneToMany

@@ -7,10 +7,10 @@ import Privacidad from "../pages/privacidad/Privacidad.jsx";
 import SeccionPage from "../pages/seccionpage/SeccionPage.jsx";
 import SinglePage from "../pages/singlepage/SinglePage.jsx";
 import Login2 from "../pages/Login/login2.jsx";
-
+import Layout from "../components/Layout/Layout.jsx";
 const MainRoutes = () => {
   return (
-    <layout>
+    <Layout>
       <Header />
       <ReactDomRoutes>
         <Route path="/" element={<Homepages />} />
@@ -22,7 +22,7 @@ const MainRoutes = () => {
       
       </ReactDomRoutes>
       <Footer />
-    </layout>
+    </Layout>
   );
 };
 

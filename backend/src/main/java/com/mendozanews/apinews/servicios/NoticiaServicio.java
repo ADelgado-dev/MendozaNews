@@ -137,6 +137,9 @@ public class NoticiaServicio {
         List<Noticia> noticias = nr.findTop6BySeccionId(idSeccion);
         return noticias;
     }
+ 
+
+
 
     // BUSCA 1 NOTICIA DE CADA SECCION
     public List<Noticia> unaPorSeccion() {
@@ -259,4 +262,5 @@ public class NoticiaServicio {
         }
 
     }
+
 }

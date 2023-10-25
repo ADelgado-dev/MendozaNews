@@ -1,5 +1,3 @@
-
-import { Route, Routes as ReactDomRoutes, Navigate } from "react-router-dom";
 import CargarAutor from "../components/dashboard/formularios/CargarAutor.jsx";
 import CargarNoticia from "../components/dashboard/formularios/CargarNoticia.jsx";
 import CargarSeccion from "../components/dashboard/formularios/CargarSeccion.jsx";
@@ -17,18 +15,25 @@ import Footer from "../components/footer/Footer.jsx";
 import HeaderDashboard from "../components/header/HeaderDashboard/HeaderDashboard";
 import VistaPrueba from "../components/dashboard/formularios/VistaPrueba.jsx";
 import Dashboard from "../pages/Dashboard/Dashboard.jsx";
+import Login2 from "../pages/Login/login2.jsx";
 import { connect } from "react-redux";
-// import Login2 from "../pages/Login/login2.jsx";
-// import Login2 from "../pages/Login/login2.jsx";
+import Layout from "../components/Layout/Layout.jsx";
+// eslint-disable-next-line no-unused-vars
+import React, { useEffect } from 'react';
+
+import { Routes, Route } from 'react-router-dom';
 
 // eslint-disable-next-line react-refresh/only-export-components
 const AdminRoutes = () => {
+  
+
   return (
-    <layout>
+    <Layout>
       <HeaderDashboard />
-      <ReactDomRoutes>
-        {/* <Route path="/login2" element={<Login2 />} /> */}
-        <Route path="/dashboard" element={<Dashboard />} />
+    <Routes>
+
+       {<Route path="/login2" element={<Login2 />} />}
+        <Route path="/dashboard" element={<Dashboard actor="admin"/>} />
         <Route path="/noticia/nueva" element={<CargarNoticia />} />
         <Route path="/noticia/listar" element={<ListaNoticias />} />
         <Route path="/noticia/editar/:id" element={<EditarNoticia />} />
@@ -42,9 +47,10 @@ const AdminRoutes = () => {
         <Route path="/usuario/nuevo" element={<CargarUsuario />} />
         <Route path="/usuario/listar" element={<ListaUsuarios />} />
         <Route path="/usuario/editar/:id" element={<EditarUsuario />} />
-      </ReactDomRoutes>
+    </Routes>
+       
       <Footer />
-    </layout>
+    </Layout>
   );
 };
 

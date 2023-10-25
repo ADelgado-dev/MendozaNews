@@ -3,11 +3,11 @@ import { request, setAuthHeader } from "../helpers/axios_helper.jsx";
 
 export const login = (username, password) => async (dispatch) => {
   try {
-    const response = await request("POST", "/login", {
-      login: username,
+    const response = await request("POST", "api/v1/entrar", {
+      email: username,
       password: password,
     });
-    const token = response.data.token;
+    const token = response.data.jwt;
 
     // Guardar el token en el localStorage
     localStorage.setItem("token", token);

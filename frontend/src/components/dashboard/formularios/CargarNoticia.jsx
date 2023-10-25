@@ -6,7 +6,7 @@ import { listaAutores } from "../../../service/autor/Listar.js";
 import { listaSecciones } from "../../../service/seccion/Listar.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileImage } from "@fortawesome/free-solid-svg-icons";
-
+import axios from "axios";
 const CargarNoticia = () => {
   const {
     register,
@@ -82,7 +82,7 @@ const CargarNoticia = () => {
   };
 
   const handleAutorChange = (e) => {
-    setIdAutor(e.target.value);
+    setIdAutor(e.target.value); // Actualizar el estado del campo idAutor
   };
 
   const handleNotificationClose = () => {
@@ -91,41 +91,45 @@ const CargarNoticia = () => {
   };
 
   const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("titulo", data.titulo);
-    formData.append("subtitulo", data.subtitulo);
-    formData.append("idSeccion", idSeccion); // Using idSeccion
-    formData.append("idAutor", idAutor); // Using idAutor
-    formData.append("portada", portada);
-    imagenes.forEach((imagen, index) => {
-      formData.append("imagenes", imagen);
-    });
-    formData.append("parrafos", JSON.stringify(parrafos));
-    formData.append("etiquetas", JSON.stringify(etiquetas));
+    if (!data.titulo || !data.subtitulo) {
+      setNotificationMessage("Por favor, completa el título y el subtítulo.");
+      setShowNotification(true);
+      return;
+    }
 
     try {
-      const response = await fetch("http://localhost:8080/api/noticia/nueva", {
-        method: "POST",
-        body: formData,
+      const formData = new FormData();
+      formData.append("titulo", data.titulo);
+      formData.append("subtitulo", data.subtitulo);
+      formData.append("idSeccion", idSeccion);
+      formData.append("idAutor", idAutor);
+      formData.append("portada", portada);
+      imagenes.forEach((imagen, index) => {
+        formData.append(`imagenes-${index}`, imagen);
+      });
+      formData.append("parrafos", JSON.stringify(parrafos));
+      formData.append("etiquetas", JSON.stringify(etiquetas));
+
+      const response = await axios.post("http://localhost:8080/api/noticia/nueva", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (response.ok) {
-        const data = await response.text();
-        setNotificationMessage(data);
+      if (response.status !== 200) {
+        const errorText = response.data;
+        setNotificationMessage(`Error: ${errorText}`);
         setShowNotification(true);
       } else {
-        setNotificationMessage(
-          "Error al enviar el formulario. Response not ok: " +
-            response.statusText
-        );
+        const data = response.data;
+        setNotificationMessage(data);
         setShowNotification(true);
       }
     } catch (error) {
-      setNotificationMessage("Error al enviar el formulario: " + error.message);
+      setNotificationMessage(`Error al enviar el formulario: ${error.message}`);
       setShowNotification(true);
     }
   };
-
   useEffect(() => {
     listaAutores()
       .then((data) => setAutores(data))
@@ -173,7 +177,7 @@ const CargarNoticia = () => {
               })}
               className="input"
               value={subtitulo}
-              onChange={(e) => setSubtitulo(e.target.value)}
+              onChange={(e) => setSubtitulo(e.target.value)} // Actualizar el estado del campo subtitulo
             />
             {errors.subtitulo && (
               <span className="error-msg">{errors.subtitulo.message}</span>

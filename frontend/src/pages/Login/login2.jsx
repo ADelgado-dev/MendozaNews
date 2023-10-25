@@ -5,8 +5,11 @@ import { login } from "../../reducer/authActions.js";
 import { setAuthHeader } from "../../helpers/axios_helper.jsx";
 import axios from "axios";
 import "../Login/login2.css";
+import { useNavigate } from 'react-router-dom';
 
 const Login2 = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -18,19 +21,32 @@ const Login2 = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:8080/api/v1/entrar", {
-        email: data.username,
-        password: data.password,
-      });
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/entrar",
+        {
+          email: data.username,
+          password: data.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      const token = response.data.token;
-      // Aquí puedes realizar acciones adicionales según la respuesta del backend
-      setAuthHeader(token);
-      dispatch(login(token));
-      setSuccessMessage("Inicio de sesión exitoso.");
-      setError("");
+      if (response.status === 200) {
+        const token = response.data.jwt;
+        setAuthHeader(token);
+        dispatch(login(data.username, data.password));
+        setSuccessMessage("Inicio de sesión exitoso.");
+        setError("");
+        navigate('/administrador/', { state: { userData: response.data } });
+      } else {
+        setError("Error al iniciar sesión. Verifica tus credenciales.");
+        setSuccessMessage("");
+      }
     } catch (error) {
-      console.log (error.message)
+      console.error(error);
       if (error.response && error.response.status === 404) {
         setError("El correo no está registrado.");
       } else {
@@ -39,6 +55,7 @@ const Login2 = () => {
       setSuccessMessage("");
     }
   };
+
 
   return (
     <div className="form-container">

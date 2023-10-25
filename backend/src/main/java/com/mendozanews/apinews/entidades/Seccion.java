@@ -27,4 +27,7 @@ public class Seccion {
 
     @OneToOne
     private Imagen icono;
+
+    public void setNoticias(Object object) {
+    }
 }
