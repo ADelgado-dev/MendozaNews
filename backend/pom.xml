@@ -200,6 +200,13 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
         </dependency>
+
+        <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.5</version> <!-- Utiliza la última versión disponible -->
+    </dependency>
+    
       </dependencies>
 
     <build>

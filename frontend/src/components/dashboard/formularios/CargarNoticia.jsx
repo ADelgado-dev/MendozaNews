@@ -7,6 +7,7 @@ import { listaSecciones } from "../../../service/seccion/Listar.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileImage } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+
 const CargarNoticia = () => {
   const {
     register,
@@ -16,8 +17,8 @@ const CargarNoticia = () => {
 
   const [titulo, setTitulo] = useState("");
   const [subtitulo, setSubtitulo] = useState("");
-  const [parrafos, setParrafos] = useState([""]);
-  const [etiquetas, setEtiquetas] = useState([""]);
+  const [parrafos, setParrafos] = useState("");
+  const [etiquetas, setEtiquetas] = useState("");
   const [idSeccion, setIdSeccion] = useState("");
   const [idAutor, setIdAutor] = useState("");
   const [portada, setPortada] = useState(null);
@@ -27,36 +28,32 @@ const CargarNoticia = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
 
-  const handleNuevoParrafoChange = (e, index) => {
-    const updatedParrafos = [...parrafos];
-    updatedParrafos[index] = e.target.value;
-    setParrafos(updatedParrafos);
+  const handleNuevoParrafoChange = (e) => {
+    setParrafos(e.target.value);
   };
 
   const handleAgregarParrafo = () => {
-    setParrafos([...parrafos, ""]);
+    setParrafos(parrafos + "\n");
   };
 
-  const handleNuevaEtiquetaChange = (e, index) => {
-    const updatedEtiquetas = [...etiquetas];
-    updatedEtiquetas[index] = e.target.value;
-    setEtiquetas(updatedEtiquetas);
+  const handleNuevaEtiquetaChange = (e) => {
+    setEtiquetas(e.target.value);
   };
 
   const handleAgregarEtiqueta = () => {
-    setEtiquetas([...etiquetas, ""]);
+    setEtiquetas(etiquetas + " ");
   };
 
   const handleEliminarParrafo = (index) => {
-    const updatedParrafos = [...parrafos];
+    const updatedParrafos = parrafos.split("\n");
     updatedParrafos.splice(index, 1);
-    setParrafos(updatedParrafos);
+    setParrafos(updatedParrafos.join("\n"));
   };
 
   const handleEliminarEtiqueta = (index) => {
-    const updatedEtiquetas = [...etiquetas];
+    const updatedEtiquetas = etiquetas.split(" ");
     updatedEtiquetas.splice(index, 1);
-    setEtiquetas(updatedEtiquetas);
+    setEtiquetas(updatedEtiquetas.join(" "));
   };
 
   const handlePortadaChange = (e) => {
@@ -82,7 +79,7 @@ const CargarNoticia = () => {
   };
 
   const handleAutorChange = (e) => {
-    setIdAutor(e.target.value); // Actualizar el estado del campo idAutor
+    setIdAutor(e.target.value);
   };
 
   const handleNotificationClose = () => {
@@ -107,14 +104,18 @@ const CargarNoticia = () => {
       imagenes.forEach((imagen, index) => {
         formData.append(`imagenes-${index}`, imagen);
       });
-      formData.append("parrafos", JSON.stringify(parrafos));
-      formData.append("etiquetas", JSON.stringify(etiquetas));
+      formData.append("parrafos", parrafos);
+      formData.append("etiquetas", etiquetas);
 
-      const response = await axios.post("http://localhost:8080/api/noticia/nueva", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      const response = await axios.post(
+        "http://localhost:8080/api/noticia/nueva",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (response.status !== 200) {
         const errorText = response.data;
@@ -130,6 +131,7 @@ const CargarNoticia = () => {
       setShowNotification(true);
     }
   };
+
   useEffect(() => {
     listaAutores()
       .then((data) => setAutores(data))
@@ -177,7 +179,7 @@ const CargarNoticia = () => {
               })}
               className="input"
               value={subtitulo}
-              onChange={(e) => setSubtitulo(e.target.value)} // Actualizar el estado del campo subtitulo
+              onChange={(e) => setSubtitulo(e.target.value)}
             />
             {errors.subtitulo && (
               <span className="error-msg">{errors.subtitulo.message}</span>
@@ -193,7 +195,13 @@ const CargarNoticia = () => {
                 <span>Subir portada</span>
               </div>
             </label>
-            <input type="file" id="portada" onChange={handlePortadaChange} />
+            <input
+              type="file"
+              id="portada"
+              name="portada"
+              accept="image/*"
+              onChange={handlePortadaChange}
+            />
 
             {errors.portada && (
               <span className="error-msg">{errors.portada.message}</span>
@@ -213,6 +221,8 @@ const CargarNoticia = () => {
               type="file"
               id="imagenes"
               onChange={handleImagenesChange}
+              name="imagenes"
+              accept="image/*"
               multiple
             />
             {errors.imagenes && (
@@ -268,11 +278,11 @@ const CargarNoticia = () => {
 
           <div>
             <label>Parrafos:</label>
-            {parrafos.map((parrafo, index) => (
+            {parrafos.split("\n").map((parrafo, index) => (
               <div key={index}>
                 <textarea
                   value={parrafo}
-                  onChange={(e) => handleNuevoParrafoChange(e, index)}
+                  onChange={handleNuevoParrafoChange}
                   placeholder="Ingrese un párrafo"
                   className="textarea"
                   id="parrafo"
@@ -297,12 +307,12 @@ const CargarNoticia = () => {
 
           <div>
             <label>Etiquetas:</label>
-            {etiquetas.map((etiqueta, index) => (
+            {etiquetas.split(" ").map((etiqueta, index) => (
               <div key={index}>
                 <input
                   type="text"
                   value={etiqueta}
-                  onChange={(e) => handleNuevaEtiquetaChange(e, index)}
+                  onChange={handleNuevaEtiquetaChange}
                   placeholder="Ingrese una etiqueta"
                   className="textarea"
                   id="etiqueta"

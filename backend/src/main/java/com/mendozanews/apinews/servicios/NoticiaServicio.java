@@ -16,9 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NoticiaServicio {
+    @Autowired
+    private NoticiaRepositorio noticiaRepository;
+
+    @Autowired
+    private AutorRepositorio autorRepository;
+
+    @Autowired
+    private SeccionRepositorio seccionRepository;
 
     @Autowired
     private NoticiaRepositorio nr;
@@ -33,7 +44,7 @@ public class NoticiaServicio {
     @Transactional
     public void cargarNoticia(String titulo, String subtitulo, List<String> parrafos,
             List<String> etiquetas, String idSeccion, String idAutor,
-            MultipartFile portada, List<MultipartFile> imagenes) throws MiException {
+            MultipartFile portada, List<MultipartFile> imagenes, MultipartFile file) throws MiException {
 
         validar(titulo, subtitulo, idSeccion, idAutor);
 
@@ -137,9 +148,6 @@ public class NoticiaServicio {
         List<Noticia> noticias = nr.findTop6BySeccionId(idSeccion);
         return noticias;
     }
- 
-
-
 
     // BUSCA 1 NOTICIA DE CADA SECCION
     public List<Noticia> unaPorSeccion() {
@@ -261,6 +269,34 @@ public class NoticiaServicio {
             return "Error al cargar: Ya hay mas noticias guardadas de las que deseas";
         }
 
+    }
+
+    @Transactional
+    public void cargarNoticia(String titulo, String subtitulo, String parrafos, String etiquetas, String idSeccion,
+            String idAutor, Object object, Object object2) throws MiException {
+
+        validar(titulo, subtitulo, idSeccion, idAutor);
+
+        Noticia noticia = new Noticia();
+        Autor autor = autorRepository.findById(idAutor).orElseThrow(() -> new MiException("Autor no encontrado"));
+        Seccion seccion = seccionRepository.findById(idSeccion)
+                .orElseThrow(() -> new MiException("Sección no encontrada"));
+
+        noticia.setTitulo(titulo);
+        noticia.setSubtitulo(subtitulo);
+        // Convertir parrafos y etiquetas en listas si es necesario
+        List<String> parrafosList = new ArrayList<>();
+        parrafosList.add(parrafos);
+        List<String> etiquetasList = new ArrayList<>();
+        etiquetasList.add(etiquetas);
+        noticia.setParrafos(parrafosList);
+        noticia.setEtiquetas(etiquetasList);
+        noticia.setSeccion(seccion);
+        noticia.setAutor(autor);
+        noticia.setFechaPublicacion(new Date());
+        noticia.setActiva(true);
+
+        noticiaRepository.save(noticia);
     }
 
 }
