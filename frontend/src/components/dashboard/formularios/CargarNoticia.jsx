@@ -58,19 +58,33 @@ const CargarNoticia = () => {
 
   const handlePortadaChange = (e) => {
     try {
-      setPortada(e.target.files[0]);
+      if (e.target.files && e.target.files.length > 0) {
+        console.log("Portada seleccionada:", e.target.files[0]); // Agregar este console log
+        setPortada(e.target.files[0]);
+      } else {
+        throw new Error("No se ha seleccionado ningún archivo de imagen.");
+      }
     } catch (error) {
       console.error("Error al actualizar la portada:", error);
+      setNotificationMessage(`Error al actualizar la portada: ${error.message}`);
+      setShowNotification(true);
     }
   };
-
+  
   const handleImagenesChange = (e) => {
     try {
-      const newImages = [...imagenes];
-      newImages.push(e.target.files[0]);
-      setImagenes(newImages);
+      if (e.target.files && e.target.files.length > 0) {
+        console.log("Portada seleccionada:", e.target.files[0]); // Agregar este console log
+        const newImages = [...imagenes];
+        newImages.push(e.target.files[0]);
+        setImagenes(newImages);
+      } else {
+        throw new Error("No se ha seleccionado ningún archivo de imagen.");
+      }
     } catch (error) {
-      console.error("Error al actualizar las imágenes:", error);
+      console.error("Error al actualizar las imágenes:", error); // Registrar el error en la consola
+      setNotificationMessage(`Error al actualizar las imágenes: ${error.message}`);
+      setShowNotification(true);
     }
   };
 
@@ -93,7 +107,7 @@ const CargarNoticia = () => {
       setShowNotification(true);
       return;
     }
-
+  
     try {
       const formData = new FormData();
       formData.append("titulo", data.titulo);
@@ -101,22 +115,23 @@ const CargarNoticia = () => {
       formData.append("idSeccion", idSeccion);
       formData.append("idAutor", idAutor);
       formData.append("portada", portada);
-      imagenes.forEach((imagen, index) => {
-        formData.append(`imagenes-${index}`, imagen);
+      imagenes.forEach((imagen) => {
+        formData.append("imagenes", imagen);
+       
       });
       formData.append("parrafos", parrafos);
       formData.append("etiquetas", etiquetas);
-
+      console.log("FormData enviado:", formData); // Agregar este console log
       const response = await axios.post(
-        "http://localhost:8080/api/noticia/nueva",
+        "http://localhost:8080/api/imagenes",
         formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-
+  
       if (response.status !== 200) {
         const errorText = response.data;
         setNotificationMessage(`Error: ${errorText}`);
@@ -197,6 +212,7 @@ const CargarNoticia = () => {
             </label>
             <input
               type="file"
+            
               id="portada"
               name="portada"
               accept="image/*"
@@ -219,9 +235,9 @@ const CargarNoticia = () => {
             </label>
             <input
               type="file"
-              id="imagenes"
+              id="imagen"
               onChange={handleImagenesChange}
-              name="imagenes"
+              name="imagen"
               accept="image/*"
               multiple
             />
@@ -343,6 +359,7 @@ const CargarNoticia = () => {
               <button id="reset-btn" className="reset-button" type="reset">
                 Resetear
               </button>
+              
             </div>
           </div>
         </form>

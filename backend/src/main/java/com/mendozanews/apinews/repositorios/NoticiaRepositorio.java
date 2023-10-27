@@ -1,7 +1,10 @@
 
 package com.mendozanews.apinews.repositorios;
 
+import com.mendozanews.apinews.entidades.Imagen;
 import com.mendozanews.apinews.entidades.Noticia;
+import com.mendozanews.apinews.entidades.Portada;
+
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +31,6 @@ public interface NoticiaRepositorio extends JpaRepository<Noticia, String> {
 
     @Query("SELECT n FROM Noticia n WHERE n.id IN ('1', '2', '3')")
     List<Noticia> listar3principales();
+
+    public Imagen save(Portada portadaEntity);
 }

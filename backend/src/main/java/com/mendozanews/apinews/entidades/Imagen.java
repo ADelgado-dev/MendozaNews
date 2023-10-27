@@ -33,4 +33,7 @@ public class Imagen {
     @Column(name = "contenido", nullable = false, columnDefinition = "LONGBLOB")
     private byte[] contenido;
 
+    public void setTipo(String contentType) {
+    }
+
 } // end Imagen

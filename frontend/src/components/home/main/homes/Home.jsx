@@ -6,13 +6,14 @@ import PubliSimple from '../publicidad/PubliSimple.jsx';
 import SeccionRow from '../seccion-row/SeccionRow.jsx';
 import Seccion from '../seccion/Seccion.jsx';
 import './home.css';
+import Recientes from '../Recientes/Recientes.jsx';
 
 export default function Home() {
     return (
         <main>
             <div className="container">
                 <section className="mainContent">
-
+                  <Recientes />
                     <Popular />
                     <PNews />
                     <Seccion lista={popular} seccion='San Rafael' />

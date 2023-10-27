@@ -3,22 +3,21 @@ package com.mendozanews.apinews.servicios;
 import com.mendozanews.apinews.entidades.Autor;
 import com.mendozanews.apinews.entidades.Imagen;
 import com.mendozanews.apinews.entidades.Noticia;
+import com.mendozanews.apinews.entidades.Portada;
 import com.mendozanews.apinews.entidades.Seccion;
 import com.mendozanews.apinews.excepciones.MiException;
 import com.mendozanews.apinews.repositorios.AutorRepositorio;
 import com.mendozanews.apinews.repositorios.NoticiaRepositorio;
 import com.mendozanews.apinews.repositorios.SeccionRepositorio;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NoticiaServicio {
@@ -40,17 +39,23 @@ public class NoticiaServicio {
     @Autowired
     private ImagenServicio is;
 
-    // CARGA UNA NOTICIA ENTERA
     @Transactional
-    public void cargarNoticia(String titulo, String subtitulo, List<String> parrafos,
-            List<String> etiquetas, String idSeccion, String idAutor,
-            MultipartFile portada, List<MultipartFile> imagenes, MultipartFile file) throws MiException {
-
+    public String cargarNoticia(String titulo, String subtitulo, String string, String string2,
+            String idSeccion,
+            String idAutor, MultipartFile[] imagenes, MultipartFile portada) {
         validar(titulo, subtitulo, idSeccion, idAutor);
 
         Noticia noticia = new Noticia();
-        Autor autor = ar.findById(idAutor).get();
-        Seccion seccion = sr.findById(idSeccion).get();
+        Autor autor = autorRepository.findById(idAutor)
+                .orElseThrow(() -> new MiException("Autor no encontrado"));
+        Seccion seccion = seccionRepository.findById(idSeccion)
+                .orElseThrow(() -> new MiException("Sección no encontrada"));
+
+        List<String> parrafos = new ArrayList<>();
+        parrafos.add(string);
+
+        List<String> etiquetas = new ArrayList<>();
+        etiquetas.add(string2);
 
         noticia.setTitulo(titulo);
         noticia.setSubtitulo(subtitulo);
@@ -61,26 +66,32 @@ public class NoticiaServicio {
         noticia.setFechaPublicacion(new Date());
         noticia.setActiva(true);
 
-        Imagen img = is.guardar(portada);
-        noticia.setPortada(img);
+        noticia.setPortada(guardarPortadaYDevolverNoticia(portada));
 
-        List<Imagen> imgs = is.guardarLista(imagenes);
-        noticia.setImagenes(imgs);
+        Noticia noticiaGuardada = noticiaRepository.save(noticia);
+        String portadaId = noticiaGuardada.getPortada().getId();
 
-        nr.save(noticia);
+        return portadaId;
     }
 
-    // EDITA UNA NOTICIA SIN CAMBIARLE SUS IMAGENES (SOLO PORTADA)
+    private Imagen guardarPortadaYDevolverNoticia(MultipartFile portada) {
+        Imagen imagen = null;
+        if (portada != null) {
+            MultipartFile file = portada;
+            imagen = is.guardar(file);
+        }
+        return imagen;
+    }
+
     @Transactional
     public void modificarNoticia(String titulo, String subtitulo, List<String> parrafos,
             List<String> etiquetas, String idSeccion, String idAutor,
             MultipartFile portada, String idNoticia) throws MiException {
-
         validar(titulo, subtitulo, idSeccion, idAutor);
 
-        Optional<Noticia> respuesta = nr.findById(idNoticia);
-        Optional<Autor> respuestaAutor = ar.findById(idAutor);
-        Optional<Seccion> respuestaSeccion = sr.findById(idSeccion);
+        Optional<Noticia> respuesta = noticiaRepository.findById(idNoticia);
+        Optional<Autor> respuestaAutor = autorRepository.findById(idAutor);
+        Optional<Seccion> respuestaSeccion = seccionRepository.findById(idSeccion);
 
         Autor autor = new Autor();
         Seccion seccion = new Seccion();
@@ -94,9 +105,7 @@ public class NoticiaServicio {
         }
 
         if (respuesta.isPresent()) {
-
             Noticia noticia = respuesta.get();
-
             validarTituloNuevo(noticia.getTitulo(), titulo);
 
             noticia.setTitulo(titulo);
@@ -114,8 +123,7 @@ public class NoticiaServicio {
             Imagen img = is.actualizar(portada, idImg);
             noticia.setPortada(img);
 
-            nr.save(noticia);
-
+            noticiaRepository.save(noticia);
         }
     }
 
@@ -215,7 +223,7 @@ public class NoticiaServicio {
 
     // VALIDA QUE EL TITULO NO EXISTA YA
     private void validarTituloNuevo(String titulo, String tituloNuevo) throws MiException {
-        if (!titulo.equals(tituloNuevo) && nr.buscarPorTitulo(tituloNuevo) != null) {
+        if (!titulo.equalsIgnoreCase(tituloNuevo) && nr.buscarPorTitulo(tituloNuevo) != null) {
             throw new MiException("Ya existe una noticia con ese título");
         }
     }
@@ -271,32 +279,14 @@ public class NoticiaServicio {
 
     }
 
-    @Transactional
-    public void cargarNoticia(String titulo, String subtitulo, String parrafos, String etiquetas, String idSeccion,
-            String idAutor, Object object, Object object2) throws MiException {
+    public Noticia guardarPortada(MultipartFile portada) {
+        return null;
+    }
 
-        validar(titulo, subtitulo, idSeccion, idAutor);
+    public void guardarLista(MultipartFile imagen) {
+    }
 
-        Noticia noticia = new Noticia();
-        Autor autor = autorRepository.findById(idAutor).orElseThrow(() -> new MiException("Autor no encontrado"));
-        Seccion seccion = seccionRepository.findById(idSeccion)
-                .orElseThrow(() -> new MiException("Sección no encontrada"));
-
-        noticia.setTitulo(titulo);
-        noticia.setSubtitulo(subtitulo);
-        // Convertir parrafos y etiquetas en listas si es necesario
-        List<String> parrafosList = new ArrayList<>();
-        parrafosList.add(parrafos);
-        List<String> etiquetasList = new ArrayList<>();
-        etiquetasList.add(etiquetas);
-        noticia.setParrafos(parrafosList);
-        noticia.setEtiquetas(etiquetasList);
-        noticia.setSeccion(seccion);
-        noticia.setAutor(autor);
-        noticia.setFechaPublicacion(new Date());
-        noticia.setActiva(true);
-
-        noticiaRepository.save(noticia);
+    public void setTipo(String tipo) {
     }
 
 }

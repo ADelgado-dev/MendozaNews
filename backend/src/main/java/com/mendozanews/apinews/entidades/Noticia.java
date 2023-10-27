@@ -55,11 +55,20 @@ public class Noticia {
 
     private Boolean activa;
 
+    private String portadaId;
     @OneToOne
     @JoinColumn(name = "portada_id")
     private Imagen portada;
 
     @OneToMany
     private List<Imagen> imagenes;
+
+    public String getPortadaId() {
+        return portadaId;
+    }
+
+    public void setPortadaId(String portadaId) {
+        this.portadaId = portadaId;
+    }
 
 }

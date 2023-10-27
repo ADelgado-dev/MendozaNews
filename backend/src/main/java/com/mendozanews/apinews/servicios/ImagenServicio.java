@@ -17,12 +17,28 @@ public class ImagenServicio {
 
     @Autowired
     private ImagenRepositorio ir;
+    private ImagenRepositorio imagenRepository;
+
+    // Guarda imagen en el repositorio de imagenes
+    public List<Imagen> guardarImagenes(MultipartFile[] imagenesParaGuardar) {
+        List<Imagen> imagenGuardada = new ArrayList<>();
+        for (MultipartFile imagen : imagenesParaGuardar) {
+            try {
+                Imagen nuevaImagen = new Imagen();
+                nuevaImagen.setNombre(imagen.getOriginalFilename());
+                nuevaImagen.setContenido(imagen.getBytes());
+                nuevaImagen.setMime(imagen.getContentType());
+                imagenGuardada.add(ir.save(nuevaImagen));
+            } catch (IOException e) {
+                // Manejo de excepciones
+            }
+        }
+        return imagenGuardada;
+    }
 
     // GUARDA UNA IMAGEN
     @Transactional
     public Imagen guardar(MultipartFile archivo) throws MiException {
-
-        archivo = validar(archivo);
 
         if (archivo != null) {
             try {
@@ -71,7 +87,7 @@ public class ImagenServicio {
                 return ir.save(imagen);
 
             } catch (IOException e) {
-                throw new MiException("No se pudo actualizar la imagen");
+                throw new MiException("No se pudo actualizar la imagen" + e.getMessage());
             }
         }
 
@@ -121,15 +137,13 @@ public class ImagenServicio {
         if (respuesta.isPresent()) {
             ir.deleteById(id);
         } else {
-            throw new MiException("No se encontro la imagen");
+            throw new MiException("No se encontro la imagen" + (id));
         }
     }
 
     // VALIDA QUE EL ARCHIVO NO SEA NULO O ESTE VACIO
     public MultipartFile validar(MultipartFile archivo) {
-        if (archivo != null && archivo.getContentType().contains("octet")) {
-            return null;
-        }
+
         // if (archivo != null && archivo.getBytes().length == 0) {
         // return null;
         // } // este es mas correcto //
@@ -144,7 +158,7 @@ public class ImagenServicio {
             Imagen imagen = ir.buscarPorContenido(contenido);
             return imagen;
         } catch (IOException ex) {
-            throw new MiException("Error al buscar imagen por contenido");
+            throw new MiException("Error al buscar imagen por contenido" + ex.getMessage());
         }
     }
 
