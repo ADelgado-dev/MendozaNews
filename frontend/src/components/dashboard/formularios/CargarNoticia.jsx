@@ -74,7 +74,7 @@ const CargarNoticia = () => {
   const handleImagenesChange = (e) => {
     try {
       if (e.target.files && e.target.files.length > 0) {
-        console.log("Portada seleccionada:", e.target.files[0]); // Agregar este console log
+        console.log("Imagen seleccionada:", e.target.files[0]); // Agregar este console log
         const newImages = [...imagenes];
         newImages.push(e.target.files[0]);
         setImagenes(newImages);
@@ -123,7 +123,7 @@ const CargarNoticia = () => {
       formData.append("etiquetas", etiquetas);
       console.log("FormData enviado:", formData); // Agregar este console log
       const response = await axios.post(
-        "http://localhost:8080/api/imagenes",
+        "http://localhost:8080/api/noticias",
         formData,
         {
           headers: {

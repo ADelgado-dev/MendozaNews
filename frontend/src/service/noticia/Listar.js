@@ -11,20 +11,7 @@ export const listaNoticias = async () => {
   }
 };
 
-//obtener noticias recientes 
-// async function obtenerNoticiasRecientes() {
-//   try {
-//       const response = await axios.get('/api/noticias/recientes');
-//       if (!response.ok) {
-//           throw new Error('Error al obtener las noticias recientes');
-//       }
-//       const data = response.data;
-//       return data;
-//   } catch (error) {
-//       console.error('Ha ocurrido un error:', error);
-//       return null;
-//   }
-// }
+
 
 // Obtener noticia por ID
 export const noticiaPorId = async (id) => {

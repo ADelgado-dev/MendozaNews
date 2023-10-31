@@ -1,7 +1,8 @@
-package com.mendozanews.apinews.entidades;
+package com.mendozanews.apinews.model.entidades;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.mendozanews.apinews.enums.Rol;
+import com.mendozanews.apinews.model.enums.Rol;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

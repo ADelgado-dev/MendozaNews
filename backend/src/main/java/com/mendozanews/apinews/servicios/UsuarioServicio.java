@@ -1,8 +1,9 @@
 package com.mendozanews.apinews.servicios;
-import com.mendozanews.apinews.entidades.Imagen;
-import com.mendozanews.apinews.entidades.Usuario;
-import com.mendozanews.apinews.enums.Rol;
+
 import com.mendozanews.apinews.excepciones.MiException;
+import com.mendozanews.apinews.model.entidades.Imagen;
+import com.mendozanews.apinews.model.entidades.Usuario;
+import com.mendozanews.apinews.model.enums.Rol;
 import com.mendozanews.apinews.repositorios.UsuarioRepositorio;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -23,8 +24,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-
-
 @Service
 public class UsuarioServicio implements UserDetailsService {
 
@@ -37,7 +36,8 @@ public class UsuarioServicio implements UserDetailsService {
     // CARGA UN USUARIO
     @Transactional
     public void cargarUsuario(String nombre, String apellido, String nombreUsuario,
-            MultipartFile imagen, String email, String telefono, String password, String password2, String rol) throws MiException {
+            MultipartFile imagen, String email, String telefono, String password, String password2, String rol)
+            throws MiException {
 
         validar(nombre, apellido, email, nombreUsuario, telefono, password, password2);
 
@@ -161,7 +161,7 @@ public class UsuarioServicio implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario = ur.buscarPorNombreUsuario(username);
-    
+
         if (usuario != null) {
             List<GrantedAuthority> permisos = new ArrayList<>();
             if (usuario.getRol() == Rol.ADMIN) {
@@ -169,17 +169,16 @@ public class UsuarioServicio implements UserDetailsService {
             } else {
                 permisos.add(new SimpleGrantedAuthority("ROLE_USER"));
             }
-            
+
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             HttpSession session = attr.getRequest().getSession();
             session.setAttribute("usuariosession", usuario);
-            
+
             return new User(usuario.getNombreUsuario(), usuario.getPassword(), permisos);
         } else {
             throw new UsernameNotFoundException("Usuario no encontrado.");
         }
     }
-
 
     // VALIDA LOS DATOS DE ENTRADA
     private void validar(String nombre, String apellido, String email, String nombreUsuario, String telefono,
@@ -230,8 +229,9 @@ public class UsuarioServicio implements UserDetailsService {
         }
 
     }
+
     public boolean authenticate(String email, String password) {
-        try { 
+        try {
             Usuario usuario = buscarPorEmail(email);
             if (usuario != null) {
                 String hashedPassword = usuario.getPassword();

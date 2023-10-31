@@ -4,6 +4,7 @@ import imagen1 from "../../assets/image/ImagenPersonal - copia.JPG";
 import imagen2 from "../../assets/image/team-3 - copia.jpg";
 import imagen3 from "../../assets/image/UrielElizaur.Fg-1343 - copia.jpg";
 
+
 /* 3 Noticias Principales */
 export const principales = [
   {

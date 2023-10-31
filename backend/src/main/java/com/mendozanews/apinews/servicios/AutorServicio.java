@@ -1,8 +1,8 @@
 package com.mendozanews.apinews.servicios;
 
-import com.mendozanews.apinews.entidades.Autor;
-import com.mendozanews.apinews.entidades.Imagen;
 import com.mendozanews.apinews.excepciones.MiException;
+import com.mendozanews.apinews.model.entidades.Autor;
+import com.mendozanews.apinews.model.entidades.Imagen;
 import com.mendozanews.apinews.repositorios.AutorRepositorio;
 import java.util.ArrayList;
 import java.util.List;

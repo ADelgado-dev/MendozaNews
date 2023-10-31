@@ -1,4 +1,3 @@
-
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -9,78 +8,90 @@ import Heading from '../../../../components/heading/Heading.jsx';
 import axios from 'axios';
 
 export default function Popular() {
-  const [recientes, setRecientes] = useState([]);
-  useEffect(() => {
+    const [recientes, setRecientes] = useState([]);
+
+    useEffect(() => {
+        obtenerNoticiasRecientes();
+    }, []);
+
     const obtenerNoticiasRecientes = async () => {
-      try {
-        const response = await axios.get('/api/noticias/recientes');
-        if (response.status !== 200) {
-          throw new Error('Error al obtener las noticias recientes');
+        try {
+            const response = await axios.get('http://localhost:8080/api/noticias/recientes');
+            const data = response.data;
+            setRecientes(data);
+        } catch (error) {
+            console.error('Error al obtener las noticias recientes: ', error);
+            throw error;
         }
-        const data = response.data;
-        setRecientes(data);
-      } catch (error) {
-        console.error('Ha ocurrido un error:', error);
-      }
     };
-    obtenerNoticiasRecientes();
-  }, []);
 
-  const settings = {
-    className: "center",
-    centerMode: false,
-    infinite: true,
-    centerPadding: "",
-    slidesToShow: 2,
-    speed: 500,
-    rows: 3,
-    slidesPerRow: 1,
-    dots: false,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 800,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  };
+    const settings = {
+        className: "center",
+        centerMode: false,
+        infinite: false,
+        centerPadding: "",
+        slidesToShow: 2,
+        speed: 500,
+        rows: 3,
+        slidesPerRow: 1,
+        dots: false,
+        autoplay: true,
+        autoplaySpeed: 3000,
+        pauseOnHover: true,
+        responsive: [
+            {
+                breakpoint: 800,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
+    };
 
-  return (
-    <section className='Recientes'>
-      <Heading title='Recientes' />
-      <Slider {...settings}>
-        {recientes.map((val, index) => (
-          <div className="items" key={index}>
-            <div className="box shadow">
-              <div className="images row">
-                <div className="img">
-                  <img src={val.imagen} alt="" />
+    return (
+        <section className="popular">
+            <Heading title="Recientes" />
+            <Slider {...settings}>
+            {recientes.map((noticia, index) => (
+    <div className="items" key={index}>
+        <div className="box shadow">
+            <div className="images row">
+                <div
+                    className="img"
+                    style={{ width: "100%", height: "auto", overflow: "hidden" }}
+                >
+                    <img
+                        src={`http://localhost:8080/api/noticias/${noticia.id}/portada`}
+                        alt={noticia.titulo}
+                        style={{ maxWidth: "100%", height: "auto" }}
+                    />
                 </div>
 
-                <div className="categoria categoria1">
-                  <Link to={`/seccion/${val.categoria}`}>
-                    <span>{val.categoria}</span>
-                  </Link>
-                </div>
-              </div>
-              <div className="text row">
-                <Link to={`/noticia/${val.titulo}`}>
-                  <h1 className="titulo">{val.titulo}</h1>
+                {noticia.seccion && (
+                    <div className="categoria categoria1">
+                        <Link to={`/seccion/${noticia.seccion.id}`}>
+                            <span>{noticia.seccion.nombre}</span>
+                        </Link>
+                    </div>
+                )}
+            </div>
+            <div className="text row">
+                <Link to={`/noticia/${noticia.id}`}>
+                    <h1 className="titulo">{noticia.titulo}</h1>
                 </Link>
                 <div className="fecha">
-                  <i className='fas fa-calendar-days'></i>
-                  <label htmlFor=''>{val.fecha}</label>
+                    <i className="fas fa-calendar-days"></i>
+                    <label htmlFor="">
+                        {new Date (noticia.fechaPublicacion).toLocaleDateString()}
+                    </label>{" "}
+                    {/* Agrega el subtítulo aquí si es necesario */}
                 </div>
-              </div>
             </div>
-          </div>
-        ))}
-      </Slider>
-    </section>
-  );
+        </div>
+    </div>
+))}
+            </Slider>
+        </section>
+    );
 }

@@ -1,13 +1,12 @@
 package com.mendozanews.apinews.repositorios;
 
-import com.mendozanews.apinews.entidades.Portada;
-
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
+import com.mendozanews.apinews.model.entidades.Portada;
+
 public interface PortadaRepositorio extends JpaRepository<Portada, Long> {
-    Optional<Portada> findById(Long id);
+    @Query("SELECT p FROM Portada p WHERE p.imagen = :contenido")
+    public Portada buscarPorContenido(@Param("contenido") byte[] contenido);
 }

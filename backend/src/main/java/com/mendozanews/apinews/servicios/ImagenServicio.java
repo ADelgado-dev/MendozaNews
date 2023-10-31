@@ -1,7 +1,7 @@
 package com.mendozanews.apinews.servicios;
 
-import com.mendozanews.apinews.entidades.Imagen;
 import com.mendozanews.apinews.excepciones.MiException;
+import com.mendozanews.apinews.model.entidades.Imagen;
 import com.mendozanews.apinews.repositorios.ImagenRepositorio;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +17,6 @@ public class ImagenServicio {
 
     @Autowired
     private ImagenRepositorio ir;
-    private ImagenRepositorio imagenRepository;
 
     // Guarda imagen en el repositorio de imagenes
     public List<Imagen> guardarImagenes(MultipartFile[] imagenesParaGuardar) {
@@ -43,19 +42,15 @@ public class ImagenServicio {
         if (archivo != null) {
             try {
                 Imagen imagen = new Imagen();
-
                 imagen.setMime(archivo.getContentType());
                 imagen.setNombre(archivo.getName());
                 imagen.setContenido(archivo.getBytes());
-
-                return ir.save(imagen);
-
+                imagen = ir.save(imagen); // Guarda la imagen en la base de datos
+                return imagen;
             } catch (IOException e) {
-
                 throw new MiException("No se pudo guardar la imagen");
             }
         }
-
         return null;
     }
 
@@ -117,7 +112,7 @@ public class ImagenServicio {
 
                     imagenesGuardadas.add(ir.save(imagen));
                 } catch (IOException e) {
-                    throw new MiException("No se pudo guardar la lista de imágenes:" + e.getMessage());
+                    throw new MiException("No se pudo guardar la lista de imágenes: " + e.getMessage());
                 }
             }
         }
@@ -162,10 +157,13 @@ public class ImagenServicio {
         }
     }
 
-    // SI EL CONTENIDO YA EXISTE DEVUELVE TRUE (NO PROBADA)
+    // Método validarExistencia
     public Boolean validarExistencia(MultipartFile archivo) throws MiException {
-        MultipartFile archivoBien = validar(archivo);
-        Imagen imagen = buscarPorContenido(archivoBien);
-        return this.getOne(imagen.getId()) != null;
-    };
+        MultipartFile archivoValidado = validar(archivo);
+        if (archivoValidado != null) {
+            Imagen imagen = buscarPorContenido(archivoValidado);
+            return imagen != null;
+        }
+        return false;
+    }
 }
